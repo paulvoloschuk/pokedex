@@ -2,52 +2,51 @@ import { connect } from 'react-redux'
 import * as pokemonActions from '../redux/actions/pokemonActions'
 
 import React, { Component, Fragment } from 'react'
+import { Card, Breadcrumbs } from '@blueprintjs/core'
+import Loader from '../components/Loader'
+import Stats from '../components/Stats'
+import EvolutionList from '../components/EvolutionList'
+import { capitalize } from '../utils'
 
 class PokemonPage extends Component {
   componentDidMount() {
     this.props.getPokemon(this.props.match.params.name)
   }
+  componentWillReceiveProps(newProps) {
+    const nameParam = newProps.match.params.name
+    if (this.props.match.params.name !== nameParam && !this.props[nameParam])
+      this.props.getPokemon(newProps.match.params.name)
+  }
 
-  _buildEvolutionChain(data, result = []) {
-    if (data.evolves_to.length)
-      this._buildEvolutionChain(data.evolves_to[0], result)
-    result.push(data.species)
-    return result
+  _linkHandler = e => {
+    e.preventDefault()
+    this.props.history.push('/')
   }
 
   render() {
     const { isFetched = true, data } =
       this.props[this.props.match.params.name] || {}
+
     return (
       <div className="pokemon_page">
         {isFetched || !data ? (
-          <p>Loading...</p>
+          <Loader>Pokemon loading</Loader>
         ) : (
           <Fragment>
-            <h1 className="pokemon_page__caption">{data.name}</h1>
+            <Breadcrumbs
+              items={[
+                {
+                  href: '/',
+                  icon: 'home',
+                  text: 'Home',
+                  onClick: this._linkHandler
+                },
+                { icon: 'document', text: capitalize(data.name) }
+              ]}
+            />
             <div className="pokemon_page__grid">
-              <table>
-                <caption>Stats</caption>
-                <tbody>
-                  {data.stats.map(({ base_stat, stat }) => (
-                    <tr key={stat.name}>
-                      <td>{stat.name}</td>
-                      <td>{base_stat}</td>
-                    </tr>
-                  ))}
-                  <tr>
-                    <td>total</td>
-                    <td>
-                      {data.stats.reduce(
-                        (sum, { base_stat }) => sum + base_stat,
-                        0
-                      )}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-
-              <div className="pokemon_page__details">
+              <Stats data={data.stats} />
+              <Card className="pokemon_page__details">
                 <img
                   src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${
                     data.id
@@ -56,21 +55,11 @@ class PokemonPage extends Component {
                   width={200}
                   height={200}
                 />
-                <table width="100%">
-                  <caption>Evolution</caption>
-                  <tbody>
-                    <tr>
-                      {this._buildEvolutionChain(data.evolution.chain)
-                        .reverse()
-                        .map(item => (
-                          <td key={item.name}>
-                            <a href={`/${item.name}`}>{item.name}</a>
-                          </td>
-                        ))}
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+                <EvolutionList
+                  current={data.name}
+                  data={data.evolution_chain}
+                />
+              </Card>
             </div>
           </Fragment>
         )}

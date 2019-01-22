@@ -34,7 +34,7 @@ export default function(state = {}, { type, payload: { name, ...data } = {} }) {
     case SET_POKEMON:
       return {
         ...state,
-        [name]: { ...state[name], data }
+        [name]: { ...state[name], data: { ...data, name } }
       }
 
     default:

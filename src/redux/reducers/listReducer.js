@@ -10,11 +10,12 @@ const initialState = {
   isFetched: false,
   error: null,
   pokemons: [],
-  displayedPokemons: []
+  displayedPokemons: [],
+  searchString: ''
 }
 
-export default function(state = initialState, action) {
-  switch (action.type) {
+export default function(state = initialState, { type, payload }) {
+  switch (type) {
     case GET_POKEMONS_REQUEST:
       return {
         ...state,
@@ -31,19 +32,19 @@ export default function(state = initialState, action) {
       return {
         ...state,
         isFetched: false,
-        error: action.payload
+        error: payload
       }
 
     case SET_POKEMONS:
       return {
         ...state,
-        pokemons: action.payload
+        pokemons: payload
       }
 
     case FILTER_POKEMONS:
       return {
         ...state,
-        displayedPokemons: action.payload
+        ...payload
       }
 
     default:

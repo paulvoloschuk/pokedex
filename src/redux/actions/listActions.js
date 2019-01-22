@@ -52,13 +52,13 @@ export function getPokemons() {
 
 export function filterPokemons(searchString = '') {
   return (dispatch, getState) => {
-    const displayedPokemons = getState().list.pokemons.filter(pokemon => {
-      return pokemon.name.includes(searchString.toLowerCase())
-    })
+    const displayed = getState().list.pokemons.filter(({ name }) =>
+      name.includes(searchString.toLowerCase())
+    )
 
     dispatch({
       type: FILTER_POKEMONS,
-      payload: displayedPokemons
+      payload: { displayed, searchString }
     })
   }
 }
