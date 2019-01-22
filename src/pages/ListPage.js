@@ -9,7 +9,6 @@ import { InputGroup, Callout } from '@blueprintjs/core'
 
 class ListPage extends Component {
   componentDidMount() {
-    console.log(this.props)
     if (!this.props.pokemons) this.props.getPokemons()
   }
 

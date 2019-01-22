@@ -39,10 +39,9 @@ export default ({
         height={96}
       />
       <h4>
-        {(searchString
+        {searchString
           ? withHighlight(searchString, capitalize(name))
-          : capitalize(name)
-        ).replace('-', ' ')}
+          : capitalize(name)}
       </h4>
     </Card>
   </Link>
